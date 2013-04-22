@@ -16,7 +16,8 @@
 
 from __future__ import print_function
 
-import pdb
+#import pdb
+mod_etree=None
 
 import re as mod_re
 import logging as mod_logging
@@ -26,10 +27,18 @@ import xml.dom.minidom as mod_minidom
 try:
     import lxml.etree as mod_etree
 except:
-    pass # LXML not available
+    pass  # LXML not available
+try:
+    from . import gpx as mod_gpx
+except ValueError:
+    import gpx as mod_gpx
 
-from . import gpx as mod_gpx
-from . import utils as mod_utils
+try:
+    from . import utils as mod_utils
+except ValueError:
+    import utils as mod_utils
+
+
 
 class XMLParser:
     """
@@ -87,9 +96,10 @@ class XMLParser:
             return node.attributes[attribute].nodeValue
         return None
 
+
 class LXMLParser:
     """
-    Used when lxml is available. 
+    Used when lxml is available.
     """
 
     xml = None
@@ -98,7 +108,7 @@ class LXMLParser:
 
     def __init__(self, xml):
         if mod_utils.PYTHON_VERSION[0] == '3':
-            # In python 3 all strings are unicode and for some reason lxml 
+            # In python 3 all strings are unicode and for some reason lxml
             # don't like unicode strings with XMLs declared as UTF-8:
             self.xml = xml.encode('utf-8')
         else:
@@ -147,6 +157,7 @@ class LXMLParser:
     def get_node_attribute(self, node, attribute):
         return node.attrib.get(attribute)
 
+
 def parse_time(string):
     if not string:
         return None
@@ -181,7 +192,8 @@ class GPXParser:
         self.xml_parser_type = parser
 
     def init(self, xml_or_file):
-        text = xml_or_file.read() if hasattr(xml_or_file, 'read') else xml_or_file
+        text = xml_or_file.read(
+        ) if hasattr(xml_or_file, 'read') else xml_or_file
         self.xml = mod_utils.make_str(text)
 
         self.valid = False
@@ -210,7 +222,8 @@ class GPXParser:
             elif self.xml_parser_type == 'minidom':
                 self.xml_parser = XMLParser(self.xml)
             else:
-                raise mod_gpx.GPXException('Invalid parser type: %s' % self.xml_parser_type)
+                raise mod_gpx.GPXException(
+                    'Invalid parser type: %s' % self.xml_parser_type)
 
             self.__parse_dom()
 
@@ -291,7 +304,8 @@ class GPXParser:
         lon = mod_utils.to_number(lon)
 
         elevation_node = self.xml_parser.get_first_child(node, 'ele')
-        elevation = mod_utils.to_number(self.xml_parser.get_node_data(elevation_node), None)
+        elevation = mod_utils.to_number(
+            self.xml_parser.get_node_data(elevation_node), None)
 
         time_node = self.xml_parser.get_first_child(node, 'time')
         time_str = self.xml_parser.get_node_data(time_node)
@@ -321,7 +335,8 @@ class GPXParser:
         pdop_node = self.xml_parser.get_first_child(node, 'pdop')
         pdop = mod_utils.to_number(self.xml_parser.get_node_data(pdop_node))
 
-        return mod_gpx.GPXWaypoint(latitude=lat, longitude=lon, elevation=elevation,
+        return mod_gpx.GPXWaypoint(
+            latitude=lat, longitude=lon, elevation=elevation,
             time=time, name=name, description=desc, symbol=sym,
             type=type, comment=comment, horizontal_dilution=hdop,
             vertical_dilution=vdop, position_dilution=pdop)
@@ -334,7 +349,8 @@ class GPXParser:
         description = self.xml_parser.get_node_data(description_node)
 
         number_node = self.xml_parser.get_first_child(node, 'number')
-        number = mod_utils.to_number(self.xml_parser.get_node_data(number_node))
+        number = mod_utils.to_number(
+            self.xml_parser.get_node_data(number_node))
 
         route = mod_gpx.GPXRoute(name, description, number)
 
@@ -359,7 +375,8 @@ class GPXParser:
         lon = mod_utils.to_number(lon)
 
         elevation_node = self.xml_parser.get_first_child(node, 'ele')
-        elevation = mod_utils.to_number(self.xml_parser.get_node_data(elevation_node), None)
+        elevation = mod_utils.to_number(
+            self.xml_parser.get_node_data(elevation_node), None)
 
         time_node = self.xml_parser.get_first_child(node, 'time')
         time_str = self.xml_parser.get_node_data(time_node)
@@ -389,8 +406,9 @@ class GPXParser:
         pdop_node = self.xml_parser.get_first_child(node, 'pdop')
         pdop = mod_utils.to_number(self.xml_parser.get_node_data(pdop_node))
 
-        return mod_gpx.GPXRoutePoint(lat, lon, elevation, time, name, desc, sym, type, comment,
-            horizontal_dilution = hdop, vertical_dilution = vdop, position_dilution = pdop)
+        return mod_gpx.GPXRoutePoint(
+            lat, lon, elevation, time, name, desc, sym, type, comment,
+            horizontal_dilution=hdop, vertical_dilution=vdop, position_dilution=pdop)
 
     def __parse_track(self, node):
         name_node = self.xml_parser.get_first_child(node, 'name')
@@ -400,7 +418,8 @@ class GPXParser:
         description = self.xml_parser.get_node_data(description_node)
 
         number_node = self.xml_parser.get_first_child(node, 'number')
-        number = mod_utils.to_number(self.xml_parser.get_node_data(number_node))
+        number = mod_utils.to_number(
+            self.xml_parser.get_node_data(number_node))
 
         track = mod_gpx.GPXTrack(name, description, number)
 
@@ -438,7 +457,8 @@ class GPXParser:
         time = parse_time(time_str)
 
         elevation_node = self.xml_parser.get_first_child(node, 'ele')
-        elevation = mod_utils.to_number(self.xml_parser.get_node_data(elevation_node), None)
+        elevation = mod_utils.to_number(
+            self.xml_parser.get_node_data(elevation_node), None)
 
         sym_node = self.xml_parser.get_first_child(node, 'sym')
         symbol = self.xml_parser.get_node_data(sym_node)
@@ -458,15 +478,39 @@ class GPXParser:
         speed_node = self.xml_parser.get_first_child(node, 'speed')
         speed = mod_utils.to_number(self.xml_parser.get_node_data(speed_node))
 
-        return mod_gpx.GPXTrackPoint(latitude=latitude, longitude=longitude, elevation=elevation, time=time,
+        extension_node = self.xml_parser.get_first_child(node, 'extensions')
+        extensions = self.__parse_track_point_extension(extension_node)
+
+        return mod_gpx.GPXTrackPoint(
+            latitude=latitude, longitude=longitude, elevation=elevation, time=time,
             symbol=symbol, comment=comment, horizontal_dilution=hdop, vertical_dilution=vdop,
-            position_dilution=pdop, speed=speed)
+            position_dilution=pdop, speed=speed, extensions=extensions)
 
+    def __parse_track_point_extension(self, node):
+        node = self.xml_parser.get_first_child(
+            node, "gpxtpx:TrackPointExtension")
 
+        atemp_node = self.xml_parser.get_first_child(node, "gpxtpx:atemp")
+        atemp = mod_utils.to_number(self.xml_parser.get_node_data(atemp_node),None)
+
+        wtemp_node = self.xml_parser.get_first_child(node, "gpxtpx:wtemp")
+        wtemp = mod_utils.to_number(self.xml_parser.get_node_data(wtemp_node),None)
+
+        depth_node = self.xml_parser.get_first_child(node, "gpxtpx:depth")
+        depth = mod_utils.to_number(self.xml_parser.get_node_data(depth_node),None)
+
+        hr_node = self.xml_parser.get_first_child(node, "gpxtpx:hr")
+        hr = mod_utils.to_number(self.xml_parser.get_node_data(hr_node),None)
+
+        cad_node = self.xml_parser.get_first_child(node, "gpxtpx:cad")
+        cad = mod_utils.to_number(self.xml_parser.get_node_data(cad_node),None)
+
+        print("Parsed Extension hr= %s"%hr)
+        return mod_gpx.TrackPointExtensionv1(atemp, wtemp, depth, hr, cad)
 
 if __name__ == '__main__':
 
-    file_name = 'test_files/aaa.gpx'
+    file_name = '../test_files/aaa.gpx'
     #file_name = 'test_files/blue_hills.gpx'
     #file_name = 'test_files/test.gpx'
     file = open(file_name, 'r')
@@ -481,10 +525,12 @@ if __name__ == '__main__':
     if parser.is_valid():
         print('TRACKS:')
         for track in gpx.tracks:
-            print('name%s, 2d:%s, 3d:%s' % (track.name, track.length_2d(), track.length_3d()))
+            print('name%s, 2d:%s, 3d:%s' % (track.name,
+                  track.length_2d(), track.length_3d()))
             print('\tTRACK SEGMENTS:')
             for track_segment in track.segments:
-                print('\t2d:%s, 3d:%s' % (track_segment.length_2d(), track_segment.length_3d()))
+                print('\t2d:%s, 3d:%s' % (
+                    track_segment.length_2d(), track_segment.length_3d()))
 
         print('ROUTES:')
         for route in gpx.routes:
