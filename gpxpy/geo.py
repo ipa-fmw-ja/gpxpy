@@ -19,7 +19,10 @@ import pdb
 import logging as mod_logging
 import math as mod_math
 
-from . import utils as mod_utils
+try:
+    from . import utils as mod_utils
+except ValueError:
+    import utils as mod_utils
 
 # Generic geo related function and class(es)
 
@@ -81,11 +84,11 @@ def length_3d(locations=None):
 
 def calculate_max_speed(speeds_and_distances):
     """
-    Compute average distance and standard deviation for distance. Extreemes 
-    in dinstances are usually extreemes in speeds, so we will ignore them, 
+    Compute average distance and standard deviation for distance. Extreemes
+    in dinstances are usually extreemes in speeds, so we will ignore them,
     here.
 
-    speeds_and_distances must be a list containing pairs of (speed, distance) 
+    speeds_and_distances must be a list containing pairs of (speed, distance)
     for every point in a track segment.
     """
     assert speeds_and_distances
@@ -134,7 +137,7 @@ def calculate_uphill_downhill(elevations):
         if 0 < n < size - 1:
             previous_ele = elevations[n-1]
             next_ele = elevations[n+1]
-            if previous_ele is not None and current_ele is not None and next_ele is not None: 
+            if previous_ele is not None and current_ele is not None and next_ele is not None:
                 return previous_ele*.3 + current_ele*.4 + next_ele*.3
         return current_ele
 
@@ -157,11 +160,11 @@ def distance(latitude_1, longitude_1, elevation_1, latitude_2, longitude_2, elev
     """
     Distance between two points. If elevation is None compute a 2d distance
 
-    if haversine==True -- haversine will be used for every computations, 
+    if haversine==True -- haversine will be used for every computations,
     otherwise...
 
-    Haversine distance will be used for distant points where elevation makes a 
-    small difference, so it is ignored. That's because haversine is 5-6 times 
+    Haversine distance will be used for distant points where elevation makes a
+    small difference, so it is ignored. That's because haversine is 5-6 times
     slower than the dummy distance algorithm (which is OK for most GPS tracks).
     """
 
@@ -234,11 +237,11 @@ class Location:
     def move(self, latitude_diff, longitude_diff):
         self.latitude += latitude_diff
         self.longitude += longitude_diff
-		
+
     def __str__(self):
         return '[loc:%s,%s@%s]' % (self.latitude, self.longitude, self.elevation)
 
     def __hash__(self):
-                return mod_utils.hash_object(self, 'latitude', 'longitude', 'elevation') 
+                return mod_utils.hash_object(self, 'latitude', 'longitude', 'elevation')
 
 
