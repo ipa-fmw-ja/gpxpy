@@ -14,10 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# modified by Jannik Abbenseth
+
 from __future__ import print_function
 
 #import pdb
-mod_etree=None
+mod_etree = None
 
 import re as mod_re
 import logging as mod_logging
@@ -37,7 +39,6 @@ try:
     from . import utils as mod_utils
 except ValueError:
     import utils as mod_utils
-
 
 
 class XMLParser:
@@ -491,21 +492,25 @@ class GPXParser:
             node, "gpxtpx:TrackPointExtension")
 
         atemp_node = self.xml_parser.get_first_child(node, "gpxtpx:atemp")
-        atemp = mod_utils.to_number(self.xml_parser.get_node_data(atemp_node),None)
+        atemp = mod_utils.to_number(
+            self.xml_parser.get_node_data(atemp_node), None)
 
         wtemp_node = self.xml_parser.get_first_child(node, "gpxtpx:wtemp")
-        wtemp = mod_utils.to_number(self.xml_parser.get_node_data(wtemp_node),None)
+        wtemp = mod_utils.to_number(
+            self.xml_parser.get_node_data(wtemp_node), None)
 
         depth_node = self.xml_parser.get_first_child(node, "gpxtpx:depth")
-        depth = mod_utils.to_number(self.xml_parser.get_node_data(depth_node),None)
+        depth = mod_utils.to_number(
+            self.xml_parser.get_node_data(depth_node), None)
 
         hr_node = self.xml_parser.get_first_child(node, "gpxtpx:hr")
-        hr = mod_utils.to_number(self.xml_parser.get_node_data(hr_node),None)
+        hr = mod_utils.to_number(self.xml_parser.get_node_data(hr_node), None)
 
         cad_node = self.xml_parser.get_first_child(node, "gpxtpx:cad")
-        cad = mod_utils.to_number(self.xml_parser.get_node_data(cad_node),None)
+        cad = mod_utils.to_number(
+            self.xml_parser.get_node_data(cad_node), None)
 
-        print("Parsed Extension hr= %s"%hr)
+        print("Parsed Extension hr= %s" % hr)
         return mod_gpx.TrackPointExtensionv1(atemp, wtemp, depth, hr, cad)
 
 if __name__ == '__main__':
