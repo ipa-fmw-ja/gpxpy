@@ -250,6 +250,12 @@ class Location:
     def elevation_angle(self, location, radians=False):
         return elevation_angle(self, location, radians)
 
+    def distance(self, location):
+        length = self.distance_3d(location)
+        if not length:
+            length = self.distance_2d(location)
+        return length
+
     def move(self, latitude_diff, longitude_diff):
         self.latitude += latitude_diff
         self.longitude += longitude_diff
