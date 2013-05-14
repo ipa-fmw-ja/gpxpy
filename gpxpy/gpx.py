@@ -335,7 +335,10 @@ class GPXTrackPoint(mod_geo.Location):
             content += mod_utils.to_xml('speed', content=self.speed)
 
         if self.extensions:
-            content += self.extensions.to_xml()
+            tmp = self.extensions.to_xml()
+            if tmp:
+                content += tmp
+
 
         return mod_utils.to_xml('trkpt', {'lat': self.latitude, 'lon': self.longitude}, content=content)
 
@@ -374,6 +377,7 @@ class GPXTrackPoint(mod_geo.Location):
             return None
 
         return length / float(seconds)
+
 
     def __str__(self):
         return '[trkpt:%s,%s@%s@%s]' % (self.latitude, self.longitude, self.elevation, self.time)
@@ -1644,9 +1648,12 @@ class TrackPointExtensionv1():
 
     def to_xml(self):
         content = ""
+
         for (k, v) in self.extensionDict.items():
             if v is not None:
                 content += mod_utils.to_xml("gpxtpx:" + k, content=v)
+        if content == "":
+            return None
         xml = mod_utils.to_xml("extensions", content=mod_utils.to_xml(
             "gpxtpx:TrackPointExtension", content=content))
         return xml
