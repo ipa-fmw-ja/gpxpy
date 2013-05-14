@@ -510,7 +510,6 @@ class GPXParser:
         cad = mod_utils.to_number(
             self.xml_parser.get_node_data(cad_node), None)
 
-        print("Parsed Extension hr= %s" % hr)
         return mod_gpx.TrackPointExtensionv1(atemp, wtemp, depth, hr, cad)
 
 if __name__ == '__main__':
